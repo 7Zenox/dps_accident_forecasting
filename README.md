@@ -3,6 +3,11 @@
 
 This repository contains my work submitted as part of the selection process for the DPS 2025 March batch. The task was to create a forecasting model for accident data and deploy it through an API endpoint that operates as follows:
 
+
+The API is deployed at the following URL:
+```
+https://dps-accident-forecasting.onrender.com
+```
 ### **Request:**
 ```json
 {
@@ -79,12 +84,10 @@ The application was Dockerized and deployed using FastAPI, providing an endpoint
 - **Docker**: The application was containerized to ensure a consistent runtime environment.
 - **FastAPI**: The web framework was chosen for its performance and ease of use, allowing us to expose our model through REST API endpoints.
 
-The API documentation for the project can be found at [Swagger UI](https://dps-ai-challenge.onrender.com/docs).
-
 #### **Endpoints Provided**:
 
 **Forecast Endpoint**:
-   - **URL**: [POST /forecast](https://dps-ai-challenge.onrender.com/api/v1/accident/)
+   - **Health check URL**: [POST /accident](https://dps-accident-forecasting.onrender.com)
    - **Description**: Accepts year and month in JSON format and returns a predicted accident value.
    
    Example request:

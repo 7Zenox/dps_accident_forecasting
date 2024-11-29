@@ -1,0 +1,2 @@
+2024-11-30 00:44:05,155 INFO utilities.helpers.accident.accident_pred Loading model from utilities/helpers/accident/src/models/prophet_model.pkl
+2024-11-30 00:44:05,367 INFO utilities.helpers.accident.accident_pred Model loaded successfully
