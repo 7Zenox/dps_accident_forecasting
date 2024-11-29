@@ -21,7 +21,6 @@ async def internal_server_error(request: Request, exc: HTTPException):
     )
 
 app = FastAPI(
-    openapi_url=None,
     default_response_class=ORJSONResponse,
     exception_handlers={
         404: route_not_found,
