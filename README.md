@@ -1,4 +1,156 @@
-# Accident Prediction API
+# Digital Product School AI Engineer Challenge 
+## Accident Prediction API
+
+This repository contains my work submitted as part of the selection process for the DPS 2025 March batch. The task was to create a forecasting model for accident data and deploy it through an API endpoint that operates as follows:
+
+### **Request:**
+```json
+{
+    "year": 2020,
+    "month": 10
+}
+```
+
+### **Response:**
+```json
+{
+    "prediction": value
+}
+```
+
+
+## **Tasks and Workflow**
+
+### **Task 1: Visualization, EDA, and Model Creation**
+
+#### **1. Exploratory Data Analysis (EDA) and Visualizations**
+
+The EDA and data visualizations were carried out to gain insights into the accident dataset and can be found in the exploratory notebook. Here are some of the key visualizations and analyses that were conducted:
+
+- **Historical Number of Accidents per Category**: A line plot was created to visualize the number of accidents over time for each category (alcohol, escape, traffic). This helps in understanding the overall trends and seasonality of the accidents.
+
+  ![Figure 1: Historical Number of Accidents per Category](utilities/helpers/accident/src/plots/historical_accidents_per_category.png)
+
+- **Accidents with Annotations**: A version of the historical accident plot with annotations highlighting significant events, such as the start of the pandemic and notable trend changes.
+
+  ![Figure 2: Accidents with Annotations](utilities/helpers/accident/src/plots/historical_accidents_with_annotations.png)
+
+- **Seasonal Decomposition**: Seasonal decomposition was performed for each accident category to observe trends, seasonality, and residuals over time. This analysis provided a deeper understanding of underlying seasonal patterns and trends.
+
+  ![Figure 3: Seasonal Decomposition](utilities/helpers/accident/src/plots/seasonal_decomposition_alcohol.png)
+
+- **Stacked Area Chart**: A stacked area chart was used to visualize the proportion of accidents per category over time. This chart shows how the contribution of each category changes over the years.
+
+  ![Figure 4: Stacked Area Chart](utilities/helpers/accident/src/plots/stacked_area_accidents_per_category.png)
+
+#### **2. Model Creation with Prophet**
+
+The Prophet model was chosen for forecasting as it is robust, easy to tune, and suitable for time series data with yearly seasonality.
+
+- The model was trained and optimized using hyperparameter tuning, with the specific parameter grid available in the [model training notebook](utilities/helpers/accident/src/final_model.ipynb).
+- Cross-validation was performed with a horizon of 1 year, training over multiple windows to ensure the model's reliability.
+
+**Prophet Plot for the Model:**
+
+![Figure 5: Prophet Forecast Plot](utilities/helpers/accident/src/plots/prophet_model_comparison.png)
+
+#### **3. Handling Data and Model Training**
+
+- The data was preprocessed to handle missing values and filter accident types.
+- Outliers were treated using the IQR method to ensure stable model performance.
+- Hyperparameter tuning for the Prophet model included `changepoint_prior_scale`, `seasonality_prior_scale`, and `seasonality_mode`.
+
+**Model Performance Summary**:
+
+```txt
+Mean Absolute Error (MAE): 7.50
+Root Mean Squared Error (RMSE): 9.05
+R^2 Score: 0.60
+```
+
+These metrics were derived from evaluating the model on the test data (data points after 2020).
+
+### **Task 2: Publishing & Deploying the Application**
+
+The application was Dockerized and deployed using FastAPI, providing an endpoint to generate forecasts based on the provided year and month.
+
+**Deployment Setup**:
+
+- **Docker**: The application was containerized to ensure a consistent runtime environment.
+- **FastAPI**: The web framework was chosen for its performance and ease of use, allowing us to expose our model through REST API endpoints.
+
+The API documentation for the project can be found at [Swagger UI](https://dps-ai-challenge.onrender.com/docs).
+
+#### **Endpoints Provided**:
+
+**Forecast Endpoint**:
+   - **URL**: [POST /forecast](https://dps-ai-challenge.onrender.com/api/v1/accident/)
+   - **Description**: Accepts year and month in JSON format and returns a predicted accident value.
+   
+   Example request:
+
+   ```json
+   {
+     "year": 2021,
+     "month": 10
+   }
+   ```
+
+   Example response:
+
+   ```json
+   {
+     "prediction": 42.36
+   }
+   ```
+
+## 📦 **Running the Application**
+
+### **Prerequisites**:
+
+- **Docker**: Ensure Docker is installed on your system.
+- **Python Dependencies**: Listed in `requirements-prod.txt`.
+
+### **Steps to Run the Application**:
+
+1. **Clone the Repository**:
+2. **Build the Docker Image**:
+
+   ```bash
+   docker build -t dps-accidents-app:latest .
+   ```
+
+3. **Run the Docker Container**:
+
+   ```bash
+    docker run -d \                           
+    --name dps-accident-container \
+    -p 8000:8000 \
+    dps-accidents-app:latest   
+    ```
+
+4. **Access the Application**:
+
+   The application will be available at `http://localhost:8000`.
+
+   - **Swagger UI**: Documentation at `http://localhost:8000/docs`
+   - **API**: Access the `/api/v1/accident/` endpoint for forecasting.
+
+### **Testing the Forecast API**:
+
+To test the forecast endpoint, use the following curl command:
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/accident/" \
+     -H "Content-Type: application/json" \
+     -d '{"year": 2021, "month": 10}'
+```
+
+## 📊 **Model Performance and Evaluation**
+
+- **Cross-Validation**: Cross-validation was conducted with a horizon of 365 days, and performance metrics were calculated for each fold.
+- **Outlier Handling**: Outliers were handled using the Interquartile Range (IQR) method to ensure stable forecasting.
+- **Holidays**: German public holidays were included as additional seasonality to improve model accuracy.
 
 ## Directory Structure
 Here is an overview tree structure of the directory:
@@ -8,150 +160,22 @@ Here is an overview tree structure of the directory:
 |-Dockerfile
 |-utilities
 | |-core
-| | |-security.py
 | | |-exceptions.py
 | |-api
 | | |-v1
-| | | |-endpoints               <- endpoint routes
-| | | | |-accident.py
+| | | |-endpoints
+| | | | |-accident.py           <- endpoint route
 | | | |-api.py
 | | |-health.py                 <- check app health at 0.0.0.0:port/
 | |-main.py
 | |-helpers                     <- write helper functions
 | | |-response.py
-| | |-hosprec                   
-| | | |-utils                   <- store models and utils in utils directory
-| | | | |-util1.py
-| | | | |-hosprec_model.keras
-| | | | |-...
-| | | |-experiment              <- store experiment files
-| | | | |-experiment.ipynb
-| | | | |-Basic_v26.sqlite
-| | | |-main.py                 <- maintain main.py naming convention
-| | | |-create_model.py
-| | |-icd_search
-| | | |-utils
-| | | | |-...
-| | | |-main.py
+| | |-accident                   
+| | | |-src                     <- store models, data, plots
+| | | |-accident_pred.py        <- forecasting driver code
 |-.dockerignore
 |-logs
-| |-debug_icd.log               <- store one log file per helper
+| |-application.log             <- store one log file per helper
 |-.gitignore
-|-.gitattributes
-|-.git
-| |-config
 |-start-server.py               <- run server
-```
-
-## Common Practices
-
-### 1. Add Experimentation Files within Helper Directory
-
-- Experimentation files should be placed in the `experiment` folder within the respective helper directory.
-- Example: `utilities/helpers/hosprec/experiment/experiment.ipynb`
-
-### 2. Maintain Utilities of a File inside Respective Helper Folder's Util Folder
-
-- Utility functions, models and supporting files specific to a module should be kept in the `utils` folder within the respective helper directory.
-- Example: `utilities/helpers/hosprec/utils/util1.py`
-
-### 3. Use Pre-created DB Engine Class
-
-- For database connections, use the pre-created `DBEngine` class from `utilities/core/db_engine.py`.
-- This ensures a consistent approach to database connections, reducing number of engine creations, improving modularity and code readability across the project.
-
-Use:
-```python
-from utilities.core.db_engine import DBEngine
-from utilities.core.config import settings
-```
-### 4. Maintain Logs Using Logger
-
-- All logs should be maintained using the `logger`.
-- Logs should be stored in the `logs` directory.
-- Ensure rolling file size is used to prevent large storage files from being created.
-- Example: `logs/debug_icd.log`
-
-Sample log template for config:
-```python
-import logging
-from logging.handlers import RotatingFileHandler
-
-# Setup logger
-logger = logging.getLogger('icdhelper')
-logger.setLevel(logging.INFO)
-
-# Create a RotatingFileHandler with a maximum file size of 10 MB and no backups
-log_file = 'logs//debug_icd.log'
-max_size = 10 * 1024 * 1024  # 10 MB
-backup_count = 0  # Maintaining no backup files
-
-rotating_handler = RotatingFileHandler(log_file, maxBytes=max_size, backupCount=backup_count)
-rotating_handler.setLevel(logging.INFO)
-
-# Formatter
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-rotating_handler.setFormatter(formatter)
-logger.addHandler(rotating_handler)
-```
-Sample Usage
-```python
-try:
-    # If processed data is not empty, append it to the database.
-    if processed_df:
-        # ...
-        logger.info("Processed dataframe is not empty and pushed to db")
-    else:
-        logger.warning("Processed dataframe is empty. Please check API.")
-except Exception as e:
-    logger.error(f"Failed to append processed data: {e}")
-```
-
-## Important Guidelines
-
-- Use relative paths when loading files.
-- Right click on file you wish to load, copy relative path
-
-#### For h5py issues
-- All dependencies are up to date. However you may notice tensorflow 2.17 works fine with h5py 3.11 on local when running the FastAPI server. However it will not build on docker due to dependency conflicts. Set `tensorflow==2.17` and `h5py==3.10` till compatibility updates.
-
-### Push Dependencies to Docker ECR
-- How to login to ecr 
-```aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 106102357433.dkr.ecr.ap-south-1.amazonaws.com```
-
-- Build image using dockerfile names Dockerfile_build
-
-`docker build -f Dockerfile_build -t hosprecommendation .`
-
-- Tag the latest image to ecr repo
-
-```docker tag ee85d0a9514c 106102357433.dkr.ecr.ap-south-1.amazonaws.com/hosprecommendation:latest```
-
-- Push docker image to ecr
-
-```docker push 106102357433.dkr.ecr.ap-south-1.amazonaws.com/hosprecommendation:latest```
-
-
-## Running the Application
-**To create a virtual environment and install requirements**
-```sh
-python3 -m venv venv
-source venv/bin/activate
-python3 install -r requirements.txt
-```
-**To start the FastAPI application**
-```sh
-pip3 start-server.py
-```
-**Build docker container**
-```sh
-docker build -t onsurityAI .
-```
-**Run Docker container**
-```sh
-docker run -d -p 5001:5001 onsurityAI
-```
-**Check running containers**
-```sh
-docker ps -a
 ```
