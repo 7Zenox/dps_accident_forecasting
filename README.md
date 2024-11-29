@@ -8,6 +8,8 @@ The API is deployed at the following URL:
 ```
 https://dps-accident-forecasting.onrender.com
 ```
+The swagger docs can be found [here](https://dps-accident-forecasting.onrender.com/docs)
+
 ### **Request:**
 ```json
 {
