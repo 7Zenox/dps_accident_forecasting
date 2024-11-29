@@ -107,7 +107,7 @@ The application was Dockerized and deployed using FastAPI, providing an endpoint
    }
    ```
 
-## 📦 **Running the Application**
+## **Running the Application**
 
 ### **Prerequisites**:
 
@@ -149,14 +149,14 @@ curl -X POST "http://localhost:8000/api/v1/accident/" \
      -d '{"year": 2021, "month": 10}'
 ```
 
-## 📊 **Model Performance and Evaluation**
+## **Model Performance and Evaluation**
 
 - **Cross-Validation**: Cross-validation was conducted with a horizon of 365 days, and performance metrics were calculated for each fold.
 - **Outlier Handling**: Outliers were handled using the Interquartile Range (IQR) method to ensure stable forecasting.
 - **Holidays**: German public holidays were included as additional seasonality to improve model accuracy.
 
 ## Directory Structure
-Here is an overview tree structure of the directory:
+Here is an overview tree structure of the directory. This architecture is designed to be flexible and scalable for future enhancements.
 
 ```
 |-requirements.txt
